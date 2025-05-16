@@ -3,7 +3,6 @@ package dstask
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
@@ -132,7 +131,7 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 	if editor == "" {
 		editor = "vim"
 	}
-	tmpfile, err := ioutil.TempFile("", tmpFilename)
+	tmpfile, err := os.CreateTemp("", tmpFilename)
 	if err != nil {
 		ExitFail("Could not create temporary file to edit")
 	}
@@ -150,8 +149,7 @@ func MustEditBytes(data []byte, tmpFilename string) []byte {
 		ExitFail("Failed to run $EDITOR")
 	}
 
-	data, err = ioutil.ReadFile(tmpfile.Name())
-
+	data, err = os.ReadFile(tmpfile.Name())
 	if err != nil {
 		ExitFail("Could not read back temporary edited file")
 	}

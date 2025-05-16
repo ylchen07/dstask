@@ -2,7 +2,6 @@ package dstask
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -42,7 +41,7 @@ func GitCommit(repoPath, format string, a ...interface{}) error {
 	msg := fmt.Sprintf(format, a...)
 
 	// needed before add cmd, see diff-index command
-	bins, err := ioutil.ReadDir(path.Join(repoPath, ".git/objects"))
+	bins, err := os.ReadDir(path.Join(repoPath, ".git/objects"))
 	if err != nil {
 		return fmt.Errorf("failed to run git commit: %s", err)
 	}
