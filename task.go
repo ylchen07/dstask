@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -245,7 +246,7 @@ func (t *Task) Modify(query Query) {
 	for i, tag := range t.Tags {
 		if StrSliceContains(query.AntiTags, tag) {
 			// delete item
-			t.Tags = append(t.Tags[:i], t.Tags[i+1:]...)
+			t.Tags = slices.Delete(t.Tags, i, i+1)
 		}
 	}
 
