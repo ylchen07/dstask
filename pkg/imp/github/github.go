@@ -52,7 +52,6 @@ type Github struct {
 
 // NewClient creates a new Github client
 func NewClient(cfg config.Github) (*Github, error) {
-
 	httpClient := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: cfg.Token},
 	))

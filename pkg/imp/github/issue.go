@@ -15,7 +15,6 @@ import (
 // IssueData is a compact way to represent an issue
 // so that templates can be expanded simply (without nested properties)
 type IssueData struct {
-
 	// internal properties
 	uuidHash hash.Hash     // to generate UUID's
 	buf      *bytes.Buffer // to expand templates into
@@ -78,7 +77,6 @@ func (id *IssueData) Init(repoOwner, repoName string, i Issue) {
 
 // ToTask generates a Task based on the issue data
 func (id *IssueData) ToTask(templates Templates) (dstask.Task, error) {
-
 	task := dstask.Task{
 		UUID:    id.UUID,
 		Status:  dstask.STATUS_PENDING,
