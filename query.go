@@ -30,36 +30,36 @@ type Query struct {
 func (query Query) String() string {
 	var args []string
 
+	addArg := func(prefix, value string) {
+		if value != "" {
+			args = append(args, prefix+value)
+		}
+	}
+
 	for _, id := range query.IDs {
 		args = append(args, strconv.Itoa(id))
 	}
 
 	for _, tag := range query.Tags {
-		args = append(args, "+"+tag)
+		addArg("+", tag)
 	}
 	for _, tag := range query.AntiTags {
-		args = append(args, "-"+tag)
+		addArg("-", tag)
 	}
 
-	if query.Project != "" {
-		args = append(args, "project:"+query.Project)
-	}
+	addArg("project:", query.Project)
 
 	for _, project := range query.AntiProjects {
-		args = append(args, "-project:"+project)
+		addArg("-project:", project)
 	}
 
-	if query.Priority != "" {
-		args = append(args, query.Priority)
-	}
+	addArg("", query.Priority)
 
 	if query.Template > 0 {
 		args = append(args, fmt.Sprintf("template:%v", query.Template))
 	}
 
-	if query.Text != "" {
-		args = append(args, "\""+query.Text+"\"")
-	}
+	addArg("\"", query.Text+"\"")
 
 	return strings.Join(args, " ")
 }
@@ -87,68 +87,71 @@ func (query Query) HasOperators() bool {
 
 // ParseQuery parses the raw command line typed by the user.
 func ParseQuery(args ...string) Query {
-	var cmd string
-	var ids []int
-	var tags []string
-	var antiTags []string
-	var project string
-	var antiProjects []string
-	var priority string
-	var template int
-	var words []string
-	var notesModeActivated bool
-	var notes []string
-	var ignoreContext bool
-
-	// something other than an ID has been parsed -- accept no more IDs
-	var IDsExhausted bool
+	var (
+		cmd                string
+		ids                []int
+		tags               []string
+		antiTags           []string
+		project            string
+		antiProjects       []string
+		priority           string
+		template           int
+		words              []string
+		notes              []string
+		ignoreContext      bool
+		notesModeActivated bool
+		IDsExhausted       bool
+	)
 
 	for _, item := range args {
 		lcItem := strings.ToLower(item)
 
-		if notesModeActivated {
-			// no more parsing syntax
+		switch {
+		case notesModeActivated:
 			notes = append(notes, item)
-			continue
-		}
 
-		if cmd == "" && StrSliceContains(ALL_CMDS, lcItem) {
+		case cmd == "" && StrSliceContains(ALL_CMDS, lcItem):
 			cmd = lcItem
-			continue
-		}
 
-		if s, err := strconv.ParseInt(item, 10, 64); !IDsExhausted && err == nil {
-			ids = append(ids, int(s))
-			continue
-		}
-
-		if item == IGNORE_CONTEXT_KEYWORD {
-			ignoreContext = true
-		} else if item == NOTE_MODE_KEYWORD {
-			notesModeActivated = true
-		} else if project == "" && strings.HasPrefix(lcItem, "project:") {
-			project = lcItem[8:]
-			// invalid project filter, but a common mistake and it's obvious what
-			// the user really means.
-		} else if project == "" && strings.HasPrefix(lcItem, "+project:") {
-			project = lcItem[9:]
-		} else if strings.HasPrefix(lcItem, "-project:") {
-			antiProjects = append(antiProjects, lcItem[9:])
-		} else if strings.HasPrefix(lcItem, "template:") {
-			if s, err := strconv.ParseInt(lcItem[9:], 10, 64); err == nil {
-				template = int(s)
+		case !IDsExhausted:
+			if id, err := strconv.ParseInt(item, 10, 64); err == nil {
+				ids = append(ids, int(id))
+				continue
 			}
-		} else if len(item) > 1 && lcItem[0:1] == "+" {
+			IDsExhausted = true
+
+		case item == IGNORE_CONTEXT_KEYWORD:
+			ignoreContext = true
+
+		case item == NOTE_MODE_KEYWORD:
+			notesModeActivated = true
+
+		case project == "" && strings.HasPrefix(lcItem, "project:"):
+			project = lcItem[8:]
+
+		case project == "" && strings.HasPrefix(lcItem, "+project:"):
+			project = lcItem[9:]
+
+		case strings.HasPrefix(lcItem, "-project:"):
+			antiProjects = append(antiProjects, lcItem[9:])
+
+		case strings.HasPrefix(lcItem, "template:"):
+			if t, err := strconv.ParseInt(lcItem[9:], 10, 64); err == nil {
+				template = int(t)
+			}
+
+		case len(item) > 1 && lcItem[0] == '+':
 			tags = append(tags, lcItem[1:])
-		} else if len(item) > 1 && lcItem[0:1] == "-" {
+
+		case len(item) > 1 && lcItem[0] == '-':
 			antiTags = append(antiTags, lcItem[1:])
-		} else if priority == "" && IsValidPriority(item) {
+
+		case priority == "" && IsValidPriority(item):
 			priority = item
-		} else {
+
+		default:
 			words = append(words, item)
 		}
-
-		IDsExhausted = true
 	}
 
 	return Query{
