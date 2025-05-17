@@ -2,7 +2,6 @@ package imp
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/naggie/dstask"
@@ -11,7 +10,6 @@ import (
 
 // ProcessTask imports a task into the local repository, merging it with a pre-existing task if necessary.
 func ProcessTask(repo string, task dstask.Task) error {
-
 	// note that locally, we may have the task as any state.
 	// try to find it from any of the states, if found, load it and delete it, merge with Github, then save it again
 	// this is quite naive but can be optimized later
@@ -25,7 +23,7 @@ func ProcessTask(repo string, task dstask.Task) error {
 		// TODO differentiate between "does not exist" and "file exist but got an error while loading"
 		// for now, we assume errors mean "do not exist"
 
-		data, err := ioutil.ReadFile(filepath)
+		data, err := os.ReadFile(filepath)
 		if err != nil {
 			continue
 		}
