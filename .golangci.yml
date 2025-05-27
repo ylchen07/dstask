@@ -1,6 +1,11 @@
+version: "2"
+
 output:
   formats:
-    - format: line-number
+    text:
+      print-linter-name: true
+      print-issued-lines: true
+      colors: true
 
 linters:
   enable:
