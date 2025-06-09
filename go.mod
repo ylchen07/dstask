@@ -18,12 +18,18 @@ require (
 )
 
 require (
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/spf13/pflag v1.0.6 // indirect
+)
+
+require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/shurcooL/graphql v0.0.0-20230722043721-ed46e5a46466 // indirect
+	github.com/spf13/cobra v1.9.1
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
