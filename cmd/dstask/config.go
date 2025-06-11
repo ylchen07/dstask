@@ -1,4 +1,4 @@
-package dstask
+package main
 
 import (
 	"os"
@@ -8,14 +8,17 @@ import (
 // Config models the dstask application's required configuration. All paths
 // are absolute.
 type Config struct {
-	// Path to the git repository
-	Repo string
-	// Path to the dstask local state file. State will differ between machines
-	StateFile string
-	// Path to the ids file
-	IDsFile string
-	// An unparsed context string, provided via DSTASK_CONTEXT
-	CtxFromEnvVar string
+	Repo          string // Path to the git repository
+	StateFile     string // Path to the dstask local state file. State will differ between machines
+	IDsFile       string // Path to the ids file
+	CtxFromEnvVar string // An unparsed context string, provided via DSTASK_CONTEXT
+}
+
+func (self *Config) InitConfig() {
+	self.CtxFromEnvVar = getEnv("DSTASK_CONTEXT", "")
+	self.Repo = getEnv("DSTASK_GIT_REPO", os.ExpandEnv("$HOME/.dstask"))
+	self.StateFile = path.Join(self.Repo, ".git", "dstask", "state.bin")
+	self.IDsFile = path.Join(self.Repo, ".git", "dstask", "ids.bin")
 }
 
 // NewConfig generates a new Config struct from the environment.

@@ -41,7 +41,9 @@ func legacy() {
 		return
 	}
 
-	conf := dstask.NewConfig()
+	conf := Config{}
+	conf.InitConfig()
+
 	dstask.EnsureRepoExists(conf.Repo)
 
 	// Load state for getting and setting ctx
