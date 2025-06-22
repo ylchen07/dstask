@@ -1,7 +1,7 @@
 .PHONY: release clean install
 dist/dstask: clean
-	go build -o dist/dstask cmd/dstask/main.go
-	go build -o dist/dstask-import cmd/dstask-import/main.go
+	go build -o dist/dstask ./cmd/dstask
+	go build -o dist/dstask-import ./cmd/dstask-import
 
 release:
 	./do-release.sh
